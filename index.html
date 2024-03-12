@@ -3103,20 +3103,10 @@ class Actions {
 	}
 }
 
-const BS = new class {
-	constructor() {
-		const HTML = document.querySelector("html")
-		const observer = new MutationObserver((mutationList, observer) => {
-			for (let mutation of mutationList) {
-				const cssData = getComputedStyle(HTML)
-				this.start(cssData)
-				observer.disconnect()
-				break
-			}
-		})
-		observer.observe(HTML, { attributes: true, childList: true, subtree: true })
-	}
-	static async start(cssData) {
+const HTML = document.querySelector("html")
+const observer = new MutationObserver(async (mutationList, observer) => {
+	for await (const mutation of mutationList) {
+		const cssData = getComputedStyle(HTML)
 		// Get the id of the browser source
 		let id = ''
 		let params = new URLSearchParams(window.location.search)
@@ -3159,11 +3149,13 @@ const BS = new class {
 		let config = await response.json()
 		DB._install(config.storage)
 		Actions._install(config.automations)
-
 		// Set accounts
 		AWS._set_accounts(aws)
 		await Twitch._set_accounts(twitch)
+		// Quit observer
+		observer.disconnect()
+		break
 	}
-}()
-
+})
+observer.observe(HTML, { attributes: true, childList: true, subtree: true })
 </script></head></html>
