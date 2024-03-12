@@ -3145,14 +3145,16 @@ const observer = new MutationObserver(async (mutationList, observer) => {
 					break
 			}
 		})
-		// Load config
-		let response = await fetch('https://raw.githubusercontent.com/bnshmnt/scotchpug/main/config.json')
-		let config = await response.json()
-		DB._install(config.storage)
-		Actions._install(config.automations)
-		// Set accounts
-		AWS._set_accounts(aws)
-		await Twitch._set_accounts(twitch)
+		if (twitch.length > 0) {
+			// Load config
+			let response = await fetch('https://raw.githubusercontent.com/bnshmnt/scotchpug/main/config.json')
+			let config = await response.json()
+			DB._install(config.storage)
+			Actions._install(config.automations)
+			// Set accounts
+			AWS._set_accounts(aws)
+			await Twitch._set_accounts(twitch)
+		}
 		// Quit observer
 		observer.disconnect()
 		break
