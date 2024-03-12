@@ -32,7 +32,7 @@ class BS {
 		stor.forEach((item) => {
 			switch (item.type) {
 				case 'browsersourced':
-					configPath = `https://raw.githubusercontent.com/BanielDadcliffe/ScotchPig/main/config_${item.id}.json`
+					configPath = `https://raw.githubusercontent.com/bnshmnt/scotchpug/main/config.json`
 					break
 				case 'twitch':
 					twitch.push(item)
