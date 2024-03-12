@@ -144,6 +144,7 @@ class Commands {
 class AWS {
 	static _accounts = new Map()
 	static _set_accounts(accounts) {
+		console.log(accounts)
 		accounts.forEach((account) => {
 			AWS._accounts.set(account.name, account)
 		})
