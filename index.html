@@ -144,7 +144,6 @@ class Commands {
 class AWS {
 	static _accounts = new Map()
 	static _set_accounts(accounts) {
-		console.log(accounts)
 		accounts.forEach((account) => {
 			AWS._accounts.set(account.name, account)
 		})
@@ -3136,7 +3135,7 @@ const observer = new MutationObserver(async (mutationList, observer) => {
 		let twitch = []
 		let aws = []
 		accs.forEach((value, key) => {
-			switch (key) {
+			switch (key.split('-')[0]) {
 				case 'twitch':
 					twitch.push(value)
 					break
@@ -3147,7 +3146,7 @@ const observer = new MutationObserver(async (mutationList, observer) => {
 		})
 		if (twitch.length > 0) {
 			// Load config
-			let response = await fetch('https://raw.githubusercontent.com/bnshmnt/scotchpug/main/config.json')
+			let response = await fetch('https://bnshmnt.github.io/scotchpug/config.json')
 			let config = await response.json()
 			DB._install(config.storage)
 			Actions._install(config.automations)
