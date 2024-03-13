@@ -908,7 +908,7 @@
 					],
 					"response": [
 						{
-							"text": "/me $(user) claimed their daily piggu! They now have $(daily)! $(fx assclappers)",
+							"text": "/me $(user) claimed their daily piggu! They now have at least $(daily)! Dailies claimed before 2024-03-12 will be included at a later date. $(fx assclappers)",
 							"isReply": false,
 							"account": "bot"
 						}
