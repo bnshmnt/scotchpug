@@ -533,20 +533,17 @@ class Twitch {
 				user.token = account.token
 				Twitch._accounts.set(account.name, user)
 				Twitch._channels.set(user.id, user)
-				if (account.name !== 'broadcaster') {
-					Twitch._bots.set(user.id, user)
-				}
 				Twitch._irc.set(account.name, new Twitch.IRC(user.id))
 				if (account.name === 'broadcaster') {
 					channels.push(['id', user.id])
+				} else {
+					Twitch._bots.set(user.id, user)
 				}
 			}
 			Twitch._eventsub = new Twitch.EventSub()
 			Twitch.listen(channels)
 		} catch (e) {
 			console.error(e)
-			await Utils.wait(5_000)
-			Twitch._set_accounts(accounts)
 		}
 	}
 
@@ -3103,61 +3100,68 @@ class Actions {
 	}
 }
 
-const HTML = document.querySelector("html")
-const observer = new MutationObserver(async (mutationList, observer) => {
-	for await (const mutation of mutationList) {
-		const cssData = getComputedStyle(HTML)
-		// Get the id of the browser source
-		let id = ''
-		let params = new URLSearchParams(window.location.search)
-		params.forEach((value, key) => {
-			id = key.toLowerCase()
-		})
-		// Parse accounts from CSS
-		let accs = new Map()
-		let cssValues = [
-			'twitch-broadcaster-token',
-			'twitch-broadcaster-client',
-			'twitch-bot-token',
-			'twitch-bot-client',
-			'aws-user-id',
-			'aws-user-secret'
-		]
-		cssValues.forEach((key) => {
-			let value = cssData.getPropertyValue(`--${key}`).replace(/\"/g, '').replace(/\s\s+/g, ' ').trim()
-			let field = key.split('-').slice(0, 2).join('-')
-			let acc = accs.get(field) ?? {
-				name: key.split('-')[1]
-			}
-			acc[key.split('-')[2]] = value
-			accs.set(field, acc)
-		})
-		let twitch = []
-		let aws = []
-		accs.forEach((value, key) => {
-			switch (key.split('-')[0]) {
-				case 'twitch':
-					twitch.push(value)
-					break
-				case 'aws':
-					aws.push(value)
-					break
-			}
-		})
-		if (twitch.length > 0) {
-			// Load config
-			let response = await fetch('https://bnshmnt.github.io/scotchpug/config.json')
-			let config = await response.json()
-			DB._install(config.storage)
-			Actions._install(config.automations)
-			// Set accounts
-			AWS._set_accounts(aws)
-			await Twitch._set_accounts(twitch)
-		}
-		// Quit observer
-		observer.disconnect()
-		break
+async function startBot(cssData) {
+	// Quit if started
+	if (hasStarted) {
+		return
 	}
+	// Get the id of the browser source
+	let id = ''
+	let params = new URLSearchParams(window.location.search)
+	params.forEach((value, key) => {
+		id = key.toLowerCase()
+	})
+	// Parse accounts from CSS
+	let accs = new Map()
+	let cssValues = [
+		'twitch-broadcaster-token',
+		'twitch-broadcaster-client',
+		'twitch-bot-token',
+		'twitch-bot-client',
+		'aws-user-id',
+		'aws-user-secret'
+	]
+	cssValues.forEach((key) => {
+		let value = cssData.getPropertyValue(`--${key}`).replace(/\"/g, '').replace(/\s\s+/g, ' ').trim()
+		let field = key.split('-').slice(0, 2).join('-')
+		let acc = accs.get(field) ?? {
+			name: key.split('-')[1]
+		}
+		acc[key.split('-')[2]] = value
+		accs.set(field, acc)
+	})
+	let twitch = []
+	let aws = []
+	accs.forEach((value, key) => {
+		switch (key.split('-')[0]) {
+			case 'twitch':
+				twitch.push(value)
+				break
+			case 'aws':
+				aws.push(value)
+				break
+		}
+	})
+	// Load config
+	const response = await fetch('https://bnshmnt.github.io/scotchpug/config.json')
+	const config = await response.json()
+	DB._install(config.storage)
+	Actions._install(config.automations)
+	// Set accounts
+	if (aws.length > 0) {
+		AWS._set_accounts(aws)
+	}
+	if (twitch.length > 0) {
+		Twitch._set_accounts(twitch)
+		var hasStarted = true
+	}
+}
+
+const HTML = document.querySelector("html")
+const observer = new MutationObserver((mutationList, observer) => {
+	const cssData = getComputedStyle(HTML)
+	startBot(cssData)
+	observer.disconnect()
 })
 observer.observe(HTML, { attributes: true, childList: true, subtree: true })
 </script></head></html>
