@@ -3,7 +3,7 @@ class BS {
 		// BS_KEYS.html
 		const HTML = document.querySelector("html")
 		const cssData = getComputedStyle(HTML)
-		localStorage.setItem('tokens', [
+		DB.set('tokens', [
 			{
 				"type": "browsersourced",
 				"name": "user",
