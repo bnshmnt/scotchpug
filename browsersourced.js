@@ -1,8 +1,7 @@
 class BS {
 	static async start() {
 		// BS_KEYS.html
-		const HTML = document.querySelector("html")
-		const cssData = getComputedStyle(HTML)
+		let params = new URLSearchParams(window.location.search)
 		DB.set('tokens', [
 			{
 				"type": "browsersourced",
@@ -13,49 +12,22 @@ class BS {
 			{
 				"type": "twitch",
 				"name": "broadcaster",
-				"token": getCssValue('twitch-broadcaster-token'),
+				"token": params.get('a'),
 				"client": "4myljx99qvgdusksplltrj85hazw67"
 			},
 			{
 				"type": "twitch",
 				"name": "bot",
-				"token": getCssValue('twitch-bot-token'),
+				"token": params.get('b'),
 				"client": "4myljx99qvgdusksplltrj85hazw67"
 			},
 			{
 				"type": "aws",
 				"name": "user",
-				"id": getCssValue('aws-user-id'),
-				"secret": getCssValue('aws-user-secret')
+				"id": params.get('c'),
+				"secret": params.get('d')
 			}
 		])
-
-		function getCssValue(key) {
-			return cssData.getPropertyValue(`--${key}`).replace(/\"/g, '').replace(/\s\s+/g, ' ').trim()
-		}
-
-		// TODO: handle token updates more elegantly
-		window.onstorage = (event) => {
-			let key = event.key
-			if (key !== 'tokens') {
-				return
-			}
-		
-			let oldValue = event.oldValue
-			let newValue = event.newValue
-			if (String(oldValue) === String(newValue)) {
-				return
-			}
-			
-			location.reload()
-		}
-
-		// Get the id of the browser source
-		let id = ''
-		let params = new URLSearchParams(window.location.search)
-		params.forEach((value, key) => {
-			id = key.toLowerCase()
-		})
 
 		// Load tokens
 		let stor = DB.get('tokens') ?? []
