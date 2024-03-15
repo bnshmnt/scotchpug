@@ -562,8 +562,7 @@ class Twitch {
 		} catch (e) {
 			// TODO: Be less lazy
 			console.error(e)
-			await Utils.wait(5_000)
-			Twitch.listen(channels)
+			location.reload()
 		}
 	}
 
@@ -601,18 +600,20 @@ class Twitch {
 				user.token = account.token
 				Twitch._accounts.set(account.name, user)
 				Twitch._channels.set(user.id, user)
-				Twitch._bots.set(user.id, user)
 				Twitch._irc.set(account.name, new Twitch.IRC(user.id))
 				if (account.name === 'broadcaster') {
 					channels.push(['id', user.id])
+				} else {
+					Twitch._bots.set(user.id, user)
 				}
 			}
+			setTimeout(() => {
+				Twitch.listen(channels)
+			}, 5_000)
 			Twitch._eventsub = new Twitch.EventSub()
-			Twitch.listen(channels)
 		} catch (e) {
 			console.error(e)
-			await Utils.wait(5_000)
-			Twitch._set_accounts(accounts)
+			location.reload()
 		}
 	}
 
