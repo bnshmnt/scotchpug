@@ -1498,8 +1498,21 @@
 							"userlevel": "everyone"
 						}
 					]
+				},
+				{
+					"id": 36,
+					"name": [
+						"fractal"
+					],
+					"response": [
+						{
+							"text": "If you're looking to upgrade your PC, check out our hardware partner Fractal at https://bit.ly/3vnw0Xs",
+							"isReply": true,
+							"account": "bot",
+							"userlevel": "everyone"
+						}
+					]
 				}
-				
 			]
 		}
 	]
